@@ -1,4 +1,4 @@
-module github.com/zoobc/account
+module github.com/zoobc/lib
 
 go 1.14
 

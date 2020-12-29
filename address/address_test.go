@@ -1,3 +1,28 @@
+// ZooBC lib
+//
+// Copyright © 2020 Quasisoft Limited - Hong Kong
+//
+// ZooBC is architected by Roberto Capodieci & Barton Johnston
+//             contact us at roberto.capodieci[at]blockchainzoo.com
+//             and barton.johnston[at]blockchainzoo.com
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 package address
 
 import (
@@ -7,6 +32,7 @@ import (
 	"reflect"
 	"testing"
 )
+
 var hashSuccess = sha3.Sum256([]byte("this can be anything"))
 
 func TestEncodeZbcID(t *testing.T) {
@@ -19,32 +45,32 @@ func TestEncodeZbcID(t *testing.T) {
 		args    args
 		want    string
 		wantErr bool
-		err error
+		err     error
 	}{
 		{
-			name:    "Success",
-			args:    args{
+			name: "Success",
+			args: args{
 				prefix:    "ZBC",
-				publicKey: hashSuccess[:] ,
+				publicKey: hashSuccess[:],
 			},
 			want:    "ZBC_GNPAA4JV_CYCEZ6I3_LSOWKKQJ_KIMAXS6P_XNAKU4TT_4HLAQBYY_UCSL6QUT",
 			wantErr: false,
 		},
 		{
-			name:    "InvalidPrefixLength",
-			args:    args{
+			name: "InvalidPrefixLength",
+			args: args{
 				prefix:    "ZB",
-				publicKey: hashSuccess[:] ,
+				publicKey: hashSuccess[:],
 			},
 			want:    "",
 			wantErr: true,
 			err:     ErrInvalidPrefixLength,
 		},
 		{
-			name:    "InvalidInputLength",
-			args:    args{
+			name: "InvalidInputLength",
+			args: args{
 				prefix:    "ZBC",
-				publicKey: hashSuccess[:30] ,
+				publicKey: hashSuccess[:30],
 			},
 			want:    "",
 			wantErr: true,
@@ -83,7 +109,7 @@ func ExampleEncodeZbcID() {
 func TestDecodeZbcID(t *testing.T) {
 
 	type args struct {
-		zbcID string
+		zbcID  string
 		pubKey []byte
 	}
 	tests := []struct {
@@ -91,21 +117,21 @@ func TestDecodeZbcID(t *testing.T) {
 		args    args
 		want    []byte
 		wantErr bool
-		err error
+		err     error
 	}{
 		{
-			name:    "Success",
-			args:    args{
-				zbcID: "ZBC_GNPAA4JV_CYCEZ6I3_LSOWKKQJ_KIMAXS6P_XNAKU4TT_4HLAQBYY_UCSL6QUT",
+			name: "Success",
+			args: args{
+				zbcID:  "ZBC_GNPAA4JV_CYCEZ6I3_LSOWKKQJ_KIMAXS6P_XNAKU4TT_4HLAQBYY_UCSL6QUT",
 				pubKey: make([]byte, 32),
 			},
 			want:    hashSuccess[:],
 			wantErr: false,
 		},
 		{
-			name:    "InvalidZbcID Length",
-			args:    args{
-				zbcID: "ZBC_GNPAA4JV_CYCEZ6I3_LSOWKKQJ_KIMAXS6P_XNAKU4TT_4HLAQBYY_UCSL6QU",
+			name: "InvalidZbcID Length",
+			args: args{
+				zbcID:  "ZBC_GNPAA4JV_CYCEZ6I3_LSOWKKQJ_KIMAXS6P_XNAKU4TT_4HLAQBYY_UCSL6QU",
 				pubKey: make([]byte, 32),
 			},
 			want:    hashSuccess[:],
@@ -113,9 +139,9 @@ func TestDecodeZbcID(t *testing.T) {
 			err:     ErrInvalidZbcIDLength,
 		},
 		{
-			name:    "Fail - wrong prefix length",
-			args:    args{
-				zbcID: "ZOOO_GNPAA4BJV_CYCEZ6I3_LSOWKKQJ_KIMAXS6P_XNAKU4TT_4HLAQBYY_UCSL6Q",
+			name: "Fail - wrong prefix length",
+			args: args{
+				zbcID:  "ZOOO_GNPAA4BJV_CYCEZ6I3_LSOWKKQJ_KIMAXS6P_XNAKU4TT_4HLAQBYY_UCSL6Q",
 				pubKey: make([]byte, 32),
 			},
 			want:    make([]byte, 32),
@@ -123,9 +149,9 @@ func TestDecodeZbcID(t *testing.T) {
 			err:     ErrInvalidPrefixLength,
 		},
 		{
-			name:    "Fail - invalid data segment",
-			args:    args{
-				zbcID: "ZOO_GNPAA4VBJVA_CYCEZB6I3A_LSOWKKQJA_KIMAXS6PA_XNAKU4TTA_4HLAQBYYA",
+			name: "Fail - invalid data segment",
+			args: args{
+				zbcID:  "ZOO_GNPAA4VBJVA_CYCEZB6I3A_LSOWKKQJA_KIMAXS6PA_XNAKU4TTA_4HLAQBYYA",
 				pubKey: make([]byte, 32),
 			},
 			want:    make([]byte, 32),
@@ -133,9 +159,9 @@ func TestDecodeZbcID(t *testing.T) {
 			err:     ErrInvalidDataSegment,
 		},
 		{
-			name:    "Fail - invalid data segment length",
-			args:    args{
-				zbcID: "ZOO_GNPAA4BJV_CYCEZ6I3_LSOWKKQJ_KIMAXS6P_XNAKU4TT_4HLAQBYY_UCSL6QU",
+			name: "Fail - invalid data segment length",
+			args: args{
+				zbcID:  "ZOO_GNPAA4BJV_CYCEZ6I3_LSOWKKQJ_KIMAXS6P_XNAKU4TT_4HLAQBYY_UCSL6QU",
 				pubKey: make([]byte, 32),
 			},
 			want:    make([]byte, 32),
@@ -143,19 +169,19 @@ func TestDecodeZbcID(t *testing.T) {
 			err:     ErrInvalidDataSegmentLength,
 		},
 		{
-			name:    "Fail - illegal base32 RFC 4648 character",
-			args:    args{
-				zbcID: "ZBC_GNPA8BJV_CYCEZ6I3_LSOWKKQJ_KIMAXS6P_XNAKU4TT_4HLAQBYY_UCSL6QUT",
+			name: "Fail - illegal base32 RFC 4648 character",
+			args: args{
+				zbcID:  "ZBC_GNPA8BJV_CYCEZ6I3_LSOWKKQJ_KIMAXS6P_XNAKU4TT_4HLAQBYY_UCSL6QUT",
 				pubKey: make([]byte, 32),
 			},
-			want:   make([]byte, 32),
+			want:    make([]byte, 32),
 			wantErr: true,
-			err: base32.CorruptInputError(4), // index of error char excluding prefix -> GNPA-(8)
+			err:     base32.CorruptInputError(4), // index of error char excluding prefix -> GNPA-(8)
 		},
 		{
-			name:    "Fail - wrong checksum",
-			args:    args{
-				zbcID: "ZBC_GNPA7BJV_CYCEZ6I3_LSOWKKQJ_KIMAXS6P_XNAKU4TT_4HLAQBYY_UCSL6QUT",
+			name: "Fail - wrong checksum",
+			args: args{
+				zbcID:  "ZBC_GNPA7BJV_CYCEZ6I3_LSOWKKQJ_KIMAXS6P_XNAKU4TT_4HLAQBYY_UCSL6QUT",
 				pubKey: make([]byte, 32),
 			},
 			want:    make([]byte, 32),
